@@ -11,5 +11,6 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.jsoup" % "jsoup" % "1.15.3",
+      "com.lihaoyi" %% "scalatags" % "0.8.2"
     )
   )
