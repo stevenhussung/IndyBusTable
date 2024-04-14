@@ -26,14 +26,27 @@ object JsoupScraper:
     
     for schedule <- bus_route.select("#stop_lists > *").asScala 
     do
-      println("\nSCHEDULE ELEMENT HERE")
-      println(schedule.attr("id"))
-      // println(schedule.text)
-      for card <- schedule.select("[class=card]").asScala
-      do
-        println(card.select("div h5 button span").text)
-        // This lists through the stops, which is too much information at this point.
-        // for stop <- schedule.select("li").asScala
-        // do
-          // println(stop.text)
+      var schedule_id_info = schedule.attr("id").split("-")
 
+      var day_of_week = schedule_id_info(1).capitalize
+      println(s"\nDay of week is: ${day_of_week}")
+
+      var direction = if schedule_id_info(2) == "0" then "Westbound" else "Eastbound"
+      println(s"Direction is: ${direction}")
+
+      var stop_list =
+        (
+        for card <- schedule.select("[class=card]").asScala
+        yield
+          var stop_name = card.select("div h5 button span").text
+          // println(s"Stop name: ${stop_name}")
+          var stop_times = List("times")
+          /*
+          for stop <- schedule.select("li").asScala
+          yield
+            stop.text
+          */
+          (stop_name -> stop_times)
+        )
+      // println(stop_list)
+      
