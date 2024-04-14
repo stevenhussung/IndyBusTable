@@ -22,7 +22,7 @@ def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) =
   yield
     var schedule_id_info = schedule.attr("id").split("-")
     var day_of_week = schedule_id_info(1).capitalize
-    var direction = if schedule_id_info(2) == "0" then "Westbound" else "Eastbound"
+    var direction = if schedule_id_info(2) == "1" then "Westbound" else "Eastbound"
 
     ((day_of_week, direction) ->
       (
