@@ -1,5 +1,6 @@
 import org.jsoup._
 import scala.jdk.CollectionConverters._
+import scalatags.Text.all._
 
 @main def hello(): Unit =
   println("Hello world!")
