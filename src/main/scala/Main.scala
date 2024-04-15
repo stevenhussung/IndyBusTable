@@ -33,9 +33,15 @@ import java.io._
         yield
           div(
             h2(weekdarity ++ ": " ++ direction),
-            for (stop_name, stop_times) <- stops
-            yield
-            p(stop_name + "\n" + stop_times.mkString(" -- "))
+            table(
+              for (stop_name, stop_times) <- stops
+              yield
+                tr(
+                  td(stop_name), 
+                  (for time <- stop_times
+                  yield td(time)).toList
+              )
+            )
           )
         ).toList
       )
