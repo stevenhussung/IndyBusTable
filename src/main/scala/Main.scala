@@ -8,7 +8,8 @@ import java.io._
   println("Hello world!")
 
   val bus_route_page = Jsoup.connect("https://www.indygo.net/route/3-michigan-street/").get()
-  val bus_route = bus_route_reader(bus_route_page).sortBy(_(0)).reverse
+  val bus_stop_times = bus_route_reader(bus_route_page).sortBy(_(0)).reverse
+
   
   // for ((weekdarity, direction), stops) <- bus_route
   // do
@@ -29,7 +30,7 @@ import java.io._
       (
         h1("Route 3: Michigan St."),
         (
-        for ((weekdarity, direction), stops) <- bus_route
+        for ((weekdarity, direction), stops) <- bus_stop_times
         yield
           div(
             h2(weekdarity ++ ": " ++ direction),
