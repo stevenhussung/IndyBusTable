@@ -24,7 +24,8 @@ import java.io._
   val html_content = 
     html(
       head(
-        script("some script")
+        script("some script"),
+        link(rel:="stylesheet",href:="./index.css")
       ),
       body
       (
@@ -34,7 +35,7 @@ import java.io._
         yield
           div(
             h2(weekdarity ++ ": " ++ direction),
-            table(
+            table(cls:="styled-table",
               for (stop_name, stop_times) <- stops
               yield
                 tr(
@@ -70,4 +71,3 @@ def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) =
         (stop_name -> stop_times)
       ).toList
     )
-    
