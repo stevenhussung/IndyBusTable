@@ -22,7 +22,11 @@
 }
 
 .styled-table tbody tr:nth-of-type(even) {
-    background-color: #a8dfff;
+    background-color: #c4e9ff;
+}
+
+.styled-table tbody td:nth-of-type(even) {
+    background-color: #a8a8a842;
 }
 
 .styled-table tbody tr:last-of-type {
