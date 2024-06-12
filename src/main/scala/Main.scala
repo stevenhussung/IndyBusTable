@@ -11,34 +11,9 @@ import java.io._
   val bus_route_page = Jsoup.connect("https://www.indygo.net/route/3-michigan-street/").get()
   val bus_stop_times = bus_route_reader(bus_route_page).sortBy(_(0)).reverse
 
+  
   println("\n\nAnd now, some html:")
-  val html_content = 
-    html(
-      head(
-        script("some script"),
-        link(rel:="stylesheet",href:="./index.css")
-      ),
-      body
-      (
-        h1("Route 3: Michigan St."),
-        (
-        for ((weekdarity, direction), stops) <- bus_stop_times
-        yield
-          div(
-            h2(weekdarity ++ ": " ++ direction),
-            table(cls:="styled-table",
-              for (stop_name, stop_times) <- stops
-              yield
-                tr(
-                  td(stop_name), 
-                  (for time <- stop_times
-                  yield td(time)).toList
-              )
-            )
-          )
-        ).toList
-      )
-    )
+  val html_content = bus_route_to_html(bus_stop_times)
 
   val output_file = File("output.html")
   val file_writer = BufferedWriter(FileWriter(output_file))
@@ -76,6 +51,48 @@ def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) :
         (stop_name -> stop_times)
       ).toList
     )
+    
+def bus_route_to_html(bus_route :
+  scala.collection.mutable.Buffer[
+    scala.Tuple2[
+      scala.Tuple2[
+        java.lang.String, java.lang.String
+      ], 
+      scala.collection.immutable.List[
+        scala.Tuple2[
+          java.lang.String,
+          scala.collection.mutable.Buffer[java.lang.String]
+        ]
+      ]
+    ]
+  ]): scalatags.Text.TypedTag[String] =
+  html(
+    head(
+      script("some script"),
+      link(rel:="stylesheet",href:="./index.css")
+    ),
+    body
+    (
+      h1("Route 3: Michigan St."),
+      (
+      for ((weekdarity, direction), stops) <- bus_route
+      yield
+        div(
+          h2(weekdarity ++ ": " ++ direction),
+          table(cls:="styled-table",
+            for (stop_name, stop_times) <- stops
+            yield
+              tr(
+                td(stop_name), 
+                (for time <- stop_times
+                yield td(time)).toList
+            )
+          )
+        )
+      ).toList
+    )
+  )
+    
 
 def getTypeAsString[T](v: T)(implicit ev: ClassTag[T]) = 
   ev.toString
