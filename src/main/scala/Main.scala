@@ -11,33 +11,6 @@ import java.io._
   val bus_route_page = Jsoup.connect("https://www.indygo.net/route/3-michigan-street/").get()
   val bus_stop_times = bus_route_reader(bus_route_page).sortBy(_(0)).reverse
 
-  println("Unpacking the class: bus stop time")
-  println(getTypeAsString(bus_stop_times))
-  println("made of")
-  println(getTypeAsString(bus_stop_times(0)))
-  println("which contains (A) (weekdarity, direction)")
-  println(getTypeAsString(bus_stop_times(0)(0)))
-  println(getTypeAsString(bus_stop_times(0)(0)(0)))
-  println(getTypeAsString(bus_stop_times(0)(0)(1)))
-  println("and (B) (stop_list)")
-  println(getTypeAsString(bus_stop_times(0)(1)))
-  println("Made of (name, time_list)")
-  println(getTypeAsString(bus_stop_times(0)(1)(0)))
-  println("Which is name and time_list")
-  println(getTypeAsString(bus_stop_times(0)(1)(0)(0)))
-  println(getTypeAsString(bus_stop_times(0)(1)(0)(1)))
-  println("made of time_strings")
-  println(getTypeAsString(bus_stop_times(0)(1)(0)(1)(0)))
-  
-  // for ((weekdarity, direction), stops) <- bus_route
-  // do
-    // println(weekdarity)
-    // println(direction)
-    // for (stop_name, stop_times) <- stops
-    // do
-      // println(stop_name)
-      // println(stop_times)
-  
   println("\n\nAnd now, some html:")
   val html_content = 
     html(
