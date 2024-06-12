@@ -19,6 +19,9 @@ import java.io._
   val file_writer = BufferedWriter(FileWriter(output_file))
   file_writer.write(html_content.toString)
   file_writer.close()
+  
+  //Next step: Finding the individual routes.
+  //But in order to do that, we probably need to convert the times into actual times--otherwise < > wont work around noon.
 
     
 def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) : 
