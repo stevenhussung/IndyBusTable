@@ -2,6 +2,7 @@ import org.jsoup._
 import scala.jdk.CollectionConverters._
 import scalatags.Text.all._
 import scala.reflect.ClassTag
+import com.github.nscala_time.time.Imports._
 
 import java.io._
 
