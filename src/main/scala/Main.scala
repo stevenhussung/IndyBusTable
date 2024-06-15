@@ -11,7 +11,6 @@ import java.io._
 
   val bus_route_page = Jsoup.connect("https://www.indygo.net/route/3-michigan-street/").get()
   val bus_stop_times = bus_route_reader(bus_route_page).sortBy(_(0)).reverse
-
   
   println("\n\nAnd now, some html:")
   val html_content = bus_route_to_html(bus_stop_times)
@@ -22,9 +21,16 @@ import java.io._
   file_writer.close()
   
   //Next step: Finding the individual routes.
-  //But in order to do that, we probably need to convert the times into actual times--otherwise < > wont work around noon.
-
-    
+  //Remembering how to unpack the data structure.
+  for ((weekdarity, direction), stops) <- bus_stop_times
+  do
+    //Will need to traverse this going across: need to get first stop_time for each stop_loc
+    for (stop_name, stop_times) <- stops
+    do
+      for time <- stop_times
+      do
+        println(weekdarity.toString() + " " + direction + " " + stop_name + " " + time)
+  
 def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) : 
   scala.collection.mutable.Buffer[
     scala.Tuple2[
@@ -96,7 +102,7 @@ def bus_route_to_html(bus_route :
       ).toList
     )
   )
-    
+
 
 def getTypeAsString[T](v: T)(implicit ev: ClassTag[T]) = 
   ev.toString
@@ -107,4 +113,3 @@ def toTime(s : String) =
 
 def timeToString(t : org.joda.time.DateTime) : String =
   t.toString("hh:mm a").toLowerCase
-//Hello?
