@@ -34,7 +34,7 @@ def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) :
       scala.collection.immutable.List[
         scala.Tuple2[
           java.lang.String,
-          scala.collection.mutable.Buffer[java.lang.String]
+          scala.collection.mutable.Buffer[org.joda.time.DateTime]
         ]
       ]
     ]
@@ -51,7 +51,7 @@ def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) :
       for card <- schedule.select("[class=card]").asScala
       yield
         var stop_name = card.select("div h5 button span").text
-        var stop_times = card.select("li").asScala.map(_.text)
+        var stop_times = card.select("li").asScala.map(_.text).map(toTime)
         (stop_name -> stop_times)
       ).toList
     )
@@ -65,7 +65,7 @@ def bus_route_to_html(bus_route :
       scala.collection.immutable.List[
         scala.Tuple2[
           java.lang.String,
-          scala.collection.mutable.Buffer[java.lang.String]
+          scala.collection.mutable.Buffer[org.joda.time.DateTime]
         ]
       ]
     ]
@@ -89,7 +89,7 @@ def bus_route_to_html(bus_route :
               tr(
                 td(stop_name), 
                 (for time <- stop_times
-                yield td(time)).toList
+                yield td(timeToString(time))).toList
             )
           )
         )
@@ -100,3 +100,11 @@ def bus_route_to_html(bus_route :
 
 def getTypeAsString[T](v: T)(implicit ev: ClassTag[T]) = 
   ev.toString
+
+def toTime(s : String) =
+  val first_word : String = s.split(" ")(0)
+  DateTimeFormat.forPattern("hh:mma").parseDateTime(first_word)
+
+def timeToString(t : org.joda.time.DateTime) : String =
+  t.toString("hh:mm a").toLowerCase
+//Hello?
