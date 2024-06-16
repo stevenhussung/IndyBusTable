@@ -33,18 +33,7 @@ import java.io._
         println(weekdarity.toString() + " " + direction + " " + stop_name + " " + time)
   */
   
-  //Test some time comparisons
-  val time_a : Time = Time("12:01pm")
-  val time_b : Time = Time("12:10pm")
-  val time_c : Time = Time("12:01pm")
-  
-  println(s"Is ${time_a} < ${time_b}? ${time_a < time_b}")
-  println(s"Is ${time_a} > ${time_b}? ${time_a > time_b}")
-  println(s"Is ${time_a} <= ${time_b}? ${time_a <= time_b}")
-  println(s"Is ${time_a} >= ${time_b}? ${time_a >= time_b}")
-  println(s"Is ${time_a} = ${time_c}? ${time_a == time_c}")
-  println(s"Is ${time_a} < ${time_c}? ${time_a < time_c}")
-  println(s"Is ${time_a} <= ${time_c}? ${time_a <= time_c}")
+
   
 def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) : 
   scala.collection.mutable.Buffer[
@@ -121,28 +110,6 @@ def bus_route_to_html(bus_route :
 
 def getTypeAsString[T](v: T)(implicit ev: ClassTag[T]) = 
   ev.toString
-
-class Time(time_string : String):
-  def toTime : org.joda.time.DateTime =
-    DateTimeFormat.forPattern("hh:mma").parseDateTime(this.time_string)
-  
-  def ==(that : Time): Boolean = 
-    this.toTime == that.toTime
-    
-  def <(that : Time): Boolean =
-    this.toTime < that.toTime
-
-  def >(that : Time): Boolean =
-    this.toTime > that.toTime
-
-  def <=(that : Time): Boolean =
-    this.toTime < that.toTime || this == that
-
-  def >=(that : Time): Boolean =
-    this.toTime > that.toTime || this == that
-
-  override def toString(): String = 
-    this.time_string
 
 def toTime(s : String) =
   val first_word : String = s.split(" ")(0)
