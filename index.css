@@ -12,9 +12,13 @@
 }
 
 .styled-table thead tr {
-    background-color: #009879;
-    color: #ffffff;
+    background-color: #78ccff;
+    /* color: #; */
     text-align: left;
+}
+
+.styled-table thead td:nth-of-type(even) {
+    background-color: #a8a8a842;
 }
 
 .styled-table tbody tr {

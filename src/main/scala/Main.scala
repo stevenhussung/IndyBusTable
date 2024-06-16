@@ -16,8 +16,39 @@ import java.io._
   val naive_route_table_html : String = bus_route_to_html(bus_stop_times)
   writeContentToFile(naive_route_table_html, "output.html")
   
+
+  println("Getting stop headers")
+  //Get names of all stops on each route
+  var route_stop_names = 
+  (
+    for ((weekdarity, direction), stops) <- bus_stop_times
+    yield
+      (
+        (weekdarity, direction),
+        (stops.map(stop => stop(0)))
+      )
+  ).toMap
+
   println("\n\nAnd now, some *more* html:")
-  var table_list = getRunsFromStops(bus_stop_times).toList
+  var table_list_runs_as_buffers = getRunsFromStops(bus_stop_times).toList
+  var table_list_runs_as_maps = 
+  (
+    for ((weekdarity, direction), run_list) <- table_list_runs_as_buffers
+    yield
+      (
+        (weekdarity, direction),
+        (
+          for run <- run_list
+          yield
+            (
+            for stop <- run
+            yield
+              (stop.name(), stop.time())
+            ).toMap
+        )
+      )
+  )
+  
   val route_table_by_run_html =
   html(
     head(
@@ -28,16 +59,35 @@ import java.io._
     (
       h1("Route 3: Michigan St."),
       (
-      for ((weekdarity, direction), run_list) <- table_list
+      for ((weekdarity, direction), run_list) <- table_list_runs_as_maps
       yield
         div(
           h2(weekdarity ++ ": " ++ direction),
           table(cls:="styled-table",
-            for run <- run_list.toList
-            yield
-              tr(
-                (for stop <- run
-                yield td(stop.toString)).toList
+            
+            thead (
+              tr (
+              for route_stop_name <- route_stop_names((weekdarity, direction))
+              yield
+                td(route_stop_name)
+              )
+            )
+            ,
+            tbody (
+              for run <- run_list.toList
+              yield
+                tr (
+                  (
+                  for route_stop_name <- route_stop_names((weekdarity, direction))
+                  yield 
+                    td (
+                      if run.contains(route_stop_name) then
+                        run(route_stop_name).toString()
+                      else
+                        ""
+                    )
+                  ).toList
+                )
             )
           )
         )
