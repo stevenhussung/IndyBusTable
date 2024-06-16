@@ -16,17 +16,36 @@ import java.io._
   val naive_route_table_html : String = bus_route_to_html(bus_stop_times)
   writeContentToFile(naive_route_table_html, "output.html")
   
-  var table_list = getRunsFromStops(bus_stop_times) //Remove (1) when you're ready for the big time
-    
-  for ((weekdarity, direction), run_list) <- table_list
-  do
-    println()
-    println(weekdarity)
-    println(direction)
-    for run <- run_list
-    do
-      println(run)
-
+  println("\n\nAnd now, some *more* html:")
+  var table_list = getRunsFromStops(bus_stop_times).toList
+  val route_table_by_run_html =
+  html(
+    head(
+      script("some script"),
+      link(rel:="stylesheet",href:="./index.css")
+    ),
+    body
+    (
+      h1("Route 3: Michigan St."),
+      (
+      for ((weekdarity, direction), run_list) <- table_list
+      yield
+        div(
+          h2(weekdarity ++ ": " ++ direction),
+          table(cls:="styled-table",
+            for run <- run_list.toList
+            yield
+              tr(
+                (for stop <- run
+                yield td(stop.toString)).toList
+            )
+          )
+        )
+      ).toList
+    )
+  ).toString
+  
+  writeContentToFile(route_table_by_run_html, "run_tables.html")
 
       
 def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) : 
