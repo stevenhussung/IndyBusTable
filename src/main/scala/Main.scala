@@ -13,63 +13,22 @@ import java.io._
   val bus_stop_times = bus_route_reader(bus_route_page).sortBy(_(0)).reverse
   
   println("\n\nAnd now, some html:")
-  val html_content = bus_route_to_html(bus_stop_times)
-
-  val output_file = File("output.html")
-  val file_writer = BufferedWriter(FileWriter(output_file))
-  file_writer.write(html_content.toString)
-  file_writer.close()
+  val naive_route_table_html : String = bus_route_to_html(bus_stop_times)
+  writeContentToFile(naive_route_table_html, "output.html")
   
-  for ((weekdarity, direction), stops) <- bus_stop_times.take(1)
+  var table_list = getRunsFromStops(bus_stop_times) //Remove (1) when you're ready for the big time
+    
+  for ((weekdarity, direction), run_list) <- table_list
   do
-    //Assemble list of bus runs for this weekdarity + route pair.
-    var run_list = scala.collection.mutable.Buffer[scala.collection.mutable.Buffer[Stop]]()
-    
-    //Reminder: each element of stops is a tuple containing a String and a List of Time's.
-    while stops(0)(1).length > 0 
-    do
-      var run = scala.collection.mutable.Buffer[Stop]()
-      
-      breakable(
-        for i <- 0 to stops.length - 1
-        do
-          //We proceed backwards through the stop locations so that we accurately account for runs that begin partway through the route.
-          var stop_raw = stops.reverse(i)
-          
-          //We remove stop times as they are added to runs, so we must check for time existence.
-          if stop_raw(1).length > 0 then
-            var next_stop = Stop(stop_raw(0), stop_raw(1)(0))
-            
-            //Add stop if appropriate.
-            if run.length == 0 || next_stop.earlierThan(run.last) then
-              run.append(next_stop)
-              stops.reverse(i)(1).remove(0)
-            else if !next_stop.earlierThan(run.last) then
-              // println(s"The stop at ${next_stop} must be a different run of this route. Ending")
-              break
-      )
-        
-      run_list += run.reverse
-    
+    println()
+    println(weekdarity)
+    println(direction)
     for run <- run_list
     do
       println(run)
 
+
       
-class Stop(stop_name : String, stop_time : Time):
-  def time() : Time =
-    stop_time
-
-  def name() : String =
-    stop_name
-
-  def earlierThan(that : Stop): Boolean = 
-    this.stop_time <= that.time()
-  
-  override def toString(): String =
-    s"${stop_name} at ${stop_time}"
-  
-
 def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) : 
   scala.collection.mutable.Buffer[
     scala.Tuple2[
@@ -114,7 +73,7 @@ def bus_route_to_html(bus_route :
         ]
       ]
     ]
-  ]): scalatags.Text.TypedTag[String] =
+  ]): String =
   html(
     head(
       script("some script"),
@@ -140,8 +99,73 @@ def bus_route_to_html(bus_route :
         )
       ).toList
     )
-  )
+  ).toString
 
 
 def getTypeAsString[T](v: T)(implicit ev: ClassTag[T]) = 
   ev.toString
+
+def writeContentToFile(content : String, outputFileName : String) : Unit =
+  val output_file = File(outputFileName)
+  val file_writer = BufferedWriter(FileWriter(output_file))
+  file_writer.write(content)
+  file_writer.close()
+
+def getRunsFromStops(bus_stop_times :
+  scala.collection.mutable.Buffer[
+    scala.Tuple2[
+      scala.Tuple2[
+        java.lang.String, java.lang.String
+      ], 
+      scala.collection.immutable.List[
+        scala.Tuple2[
+          java.lang.String,
+          scala.collection.mutable.Buffer[Time]
+        ]
+      ]
+    ]
+  ]) : 
+    scala.collection.mutable.Buffer
+    [
+      scala.Tuple2[
+        scala.Tuple2[
+          java.lang.String, java.lang.String
+        ], 
+        scala.collection.mutable.Buffer
+        [
+          scala.collection.mutable.Buffer[Stop]
+        ]
+      ]
+    ]
+  =
+  for ((weekdarity, direction), stops) <- bus_stop_times
+  yield
+    //Assemble list of bus runs for this weekdarity + route pair.
+    var run_list = scala.collection.mutable.Buffer[scala.collection.mutable.Buffer[Stop]]()
+    
+    //Reminder: each element of stops is a tuple containing a String and a List of Time's.
+    while stops(0)(1).length > 0 
+    do
+      var run = scala.collection.mutable.Buffer[Stop]()
+      
+      breakable(
+        for i <- 0 to stops.length - 1
+        do
+          //We proceed backwards through the stop locations so that we accurately account for runs that begin partway through the route.
+          var stop_raw = stops.reverse(i)
+          
+          //We remove stop times as they are added to runs, so we must check for time existence.
+          if stop_raw(1).length > 0 then
+            var next_stop = Stop(stop_raw(0), stop_raw(1)(0))
+            
+            //Add stop if appropriate.
+            if run.length == 0 || next_stop.earlierThan(run.last) then
+              run.append(next_stop)
+              stops.reverse(i)(1).remove(0)
+            else if !next_stop.earlierThan(run.last) then
+              // println(s"The stop at ${next_stop} must be a different run of this route. Ending")
+              break
+      )
+      
+      run_list += run.reverse
+    ((weekdarity, direction), run_list)
