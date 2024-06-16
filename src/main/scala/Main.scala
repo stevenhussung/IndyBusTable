@@ -31,19 +31,6 @@ import java.io._
       do
         println(weekdarity.toString() + " " + direction + " " + stop_name + " " + time)
   */
-
-  //Test some time comparisons
-  val time_a : Time = Time("12:01pm")
-  val time_b : Time = Time("12:10pm")
-  val time_c : Time = Time("12:01pm")
-  
-  println(s"Is ${time_a} < ${time_b}? ${time_a < time_b}")
-  println(s"Is ${time_a} > ${time_b}? ${time_a > time_b}")
-  println(s"Is ${time_a} <= ${time_b}? ${time_a <= time_b}")
-  println(s"Is ${time_a} >= ${time_b}? ${time_a >= time_b}")
-  println(s"Is ${time_a} = ${time_c}? ${time_a == time_c}")
-  println(s"Is ${time_a} < ${time_c}? ${time_a < time_c}")
-  println(s"Is ${time_a} <= ${time_c}? ${time_a <= time_c}")
   
 def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) : 
   scala.collection.mutable.Buffer[
