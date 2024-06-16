@@ -2,6 +2,7 @@ import org.jsoup._
 import scala.jdk.CollectionConverters._
 import scalatags.Text.all._
 import scala.reflect.ClassTag
+import util.control.Breaks._
 
 import java.io._
 
@@ -19,20 +20,8 @@ import java.io._
   file_writer.write(html_content.toString)
   file_writer.close()
   
-  //Next step: Finding the individual routes.
-  //Remembering how to unpack the data structure.
   for ((weekdarity, direction), stops) <- bus_stop_times.take(1)
   do
-    //Will need to traverse this going across: need to get first stop_time for each stop_loc
-    
-    //"Natural traversal"
-    // for (stop_name, stop_times) <- stops
-    // do
-      // for time <- stop_times
-      // do
-        // println(weekdarity.toString() + " " + direction + " " + stop_name + " " + time)
-    
-      
     //Assemble list of bus runs for this weekdarity + route pair.
     var run_list = scala.collection.mutable.Buffer[scala.collection.mutable.Buffer[Stop]]()
     
@@ -40,19 +29,26 @@ import java.io._
     while stops(0)(1).length > 0 
     do
       var run = scala.collection.mutable.Buffer[Stop]()
-      for i <- 0 to stops.length - 1
-      do
-        var stop_raw = stops.reverse(i)
-        if stop_raw(1).length > 0 then
-          var next_stop = Stop(stop_raw(0), stop_raw(1)(0))
-          
-          //Add if in earlier (or if first)
-          if run.length == 0 || next_stop.earlierThan(run.last) then
-            run.append(next_stop)
-            stops.reverse(i)(1).remove(0)
-          // else
-            // println(s"The stop at ${next_stop} must be a different run of this route. Ending")
       
+      breakable(
+        for i <- 0 to stops.length - 1
+        do
+          //We proceed backwards through the stop locations so that we accurately account for runs that begin partway through the route.
+          var stop_raw = stops.reverse(i)
+          
+          //We remove stop times as they are added to runs, so we must check for time existence.
+          if stop_raw(1).length > 0 then
+            var next_stop = Stop(stop_raw(0), stop_raw(1)(0))
+            
+            //Add stop if appropriate.
+            if run.length == 0 || next_stop.earlierThan(run.last) then
+              run.append(next_stop)
+              stops.reverse(i)(1).remove(0)
+            else if !next_stop.earlierThan(run.last) then
+              // println(s"The stop at ${next_stop} must be a different run of this route. Ending")
+              break
+      )
+        
       run_list += run.reverse
     
     for run <- run_list
