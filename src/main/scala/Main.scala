@@ -2,7 +2,6 @@ import org.jsoup._
 import scala.jdk.CollectionConverters._
 import scalatags.Text.all._
 import scala.reflect.ClassTag
-import com.github.nscala_time.time.Imports._
 
 import java.io._
 
@@ -121,10 +120,3 @@ def bus_route_to_html(bus_route :
 
 def getTypeAsString[T](v: T)(implicit ev: ClassTag[T]) = 
   ev.toString
-
-def toTime(s : String) =
-  val first_word : String = s.split(" ")(0)
-  DateTimeFormat.forPattern("hh:mma").parseDateTime(first_word)
-
-def timeToString(t : org.joda.time.DateTime) : String =
-  t.toString("hh:mma").toLowerCase
