@@ -1,6 +1,9 @@
 # IndyBusTable
 Improved display for Indianapolis Bus Schedules, and eventually maybe bus location tracking and analysis
 
+To see the output, check out https://html-preview.github.io/?url=https://github.com/stevenhussung/IndyBusTimeTable/blob/main/run_tables.html
+
+Or the original, more raw pull of the data: https://html-preview.github.io/?url=https://github.com/stevenhussung/IndyBusTimeTable/blob/main/output.html
 
 ## sbt project compiled with Scala 3
 
