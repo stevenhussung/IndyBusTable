@@ -19,19 +19,61 @@ import java.io._
   file_writer.write(html_content.toString)
   file_writer.close()
   
-  /*
   //Next step: Finding the individual routes.
   //Remembering how to unpack the data structure.
-  for ((weekdarity, direction), stops) <- bus_stop_times
+  for ((weekdarity, direction), stops) <- bus_stop_times.take(1)
   do
     //Will need to traverse this going across: need to get first stop_time for each stop_loc
-    for (stop_name, stop_times) <- stops
+    
+    //"Natural traversal"
+    // for (stop_name, stop_times) <- stops
+    // do
+      // for time <- stop_times
+      // do
+        // println(weekdarity.toString() + " " + direction + " " + stop_name + " " + time)
+    
+      
+    //Assemble list of bus runs for this weekdarity + route pair.
+    var run_list = scala.collection.mutable.Buffer[scala.collection.mutable.Buffer[Stop]]()
+    
+    //Reminder: each element of stops is a tuple containing a String and a List of Time's.
+    while stops(0)(1).length > 0 
     do
-      for time <- stop_times
+      var run = scala.collection.mutable.Buffer[Stop]()
+      for i <- 0 to stops.length - 1
       do
-        println(weekdarity.toString() + " " + direction + " " + stop_name + " " + time)
-  */
+        var stop_raw = stops.reverse(i)
+        if stop_raw(1).length > 0 then
+          var next_stop = Stop(stop_raw(0), stop_raw(1)(0))
+          
+          //Add if in earlier (or if first)
+          if run.length == 0 || next_stop.earlierThan(run.last) then
+            run.append(next_stop)
+            stops.reverse(i)(1).remove(0)
+          // else
+            // println(s"The stop at ${next_stop} must be a different run of this route. Ending")
+      
+      run_list += run.reverse
+    
+    for run <- run_list
+    do
+      println(run)
+
+      
+class Stop(stop_name : String, stop_time : Time):
+  def time() : Time =
+    stop_time
+
+  def name() : String =
+    stop_name
+
+  def earlierThan(that : Stop): Boolean = 
+    this.stop_time <= that.time()
   
+  override def toString(): String =
+    s"${stop_name} at ${stop_time}"
+  
+
 def bus_route_reader(bus_route_page : org.jsoup.nodes.Document) : 
   scala.collection.mutable.Buffer[
     scala.Tuple2[
